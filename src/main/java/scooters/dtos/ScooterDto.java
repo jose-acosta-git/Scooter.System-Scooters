@@ -5,13 +5,11 @@ import java.time.LocalDate;
 public class ScooterDto {
 
 	private String status;
-	
 	private double latitude;
 	private double longitude;
 	private LocalDate lastMaintenanceDate;
 	
 	public ScooterDto(String status, double latitude, double longitude, LocalDate lastMaintenanceDate) {
-		super();
 		this.status = status;
 		this.latitude = latitude;
 		this.longitude = longitude;
