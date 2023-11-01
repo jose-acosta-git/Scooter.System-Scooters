@@ -9,8 +9,8 @@ public class ScooterDto {
 	private double longitude;
 	private LocalDate lastMaintenanceDate;
 	
-	public ScooterDto(String status, double latitude, double longitude, LocalDate lastMaintenanceDate) {
-		this.status = status;
+	public ScooterDto(double latitude, double longitude, LocalDate lastMaintenanceDate) {
+		this.status = "available";
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.lastMaintenanceDate = lastMaintenanceDate;

@@ -26,8 +26,8 @@ public class Scooter {
 	@Column
 	private LocalDate lastMaintenanceDate;
 
-	public Scooter(String status, double latitude, double longitude, LocalDate lastMaintenanceDate) {
-		this.status = status;
+	public Scooter(double latitude, double longitude, LocalDate lastMaintenanceDate) {
+		this.status = "available";
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.lastMaintenanceDate = lastMaintenanceDate;

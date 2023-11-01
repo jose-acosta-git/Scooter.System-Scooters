@@ -20,7 +20,7 @@ public class ScootersService {
 	}
 	
 	private Scooter convertToEntity(ScooterDto dto) {
-		return new Scooter(dto.getStatus(), dto.getLatitude(), dto.getLongitude(), dto.getLastMaintenanceDate());
+		return new Scooter(dto.getLatitude(), dto.getLongitude(), dto.getLastMaintenanceDate());
 	}
 
 }
