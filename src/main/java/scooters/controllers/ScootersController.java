@@ -3,7 +3,10 @@ package scooters.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,5 +36,10 @@ public class ScootersController {
 	public List<Scooter> findAll() {
 		return scootersRepository.findAll();
 	}
+	
+    @PatchMapping("/{scooterId}/status")
+    public ResponseEntity<Scooter> updateScooterStatus(@PathVariable int scooterId, @RequestBody String newStatus) {
+        return scootersService.updateScooterStatus(scooterId, newStatus);
+    }
 
 }

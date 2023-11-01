@@ -40,4 +40,8 @@ public class Scooter {
 	public double getLatitude() {return latitude;}
 	public double getLongitude() {return longitude;}
 	public LocalDate getLastMaintenanceDate() {return lastMaintenanceDate;}
+	
+	public void setStatus(String status) {
+		this.status = status;
+	}
 }
