@@ -38,9 +38,14 @@ public class ScootersController {
 		return scootersRepository.findAll();
 	}
 	
-    @PatchMapping("/{scooterId}/status")
-    public ResponseEntity<Scooter> updateScooterStatus(@PathVariable int scooterId, @RequestBody String newStatus) {
-        return scootersService.updateScooterStatus(scooterId, newStatus);
+    @PatchMapping("/{scooterId}/startMaintenance")
+    public ResponseEntity<Scooter> startMaintenance(@PathVariable int scooterId) {
+        return scootersService.startMaintenance(scooterId);
+    }
+    
+    @PatchMapping("/{scooterId}/finishMaintenance")
+    public ResponseEntity<Scooter> finishMaintenance(@PathVariable int scooterId) {
+        return scootersService.finishMaintenance(scooterId);
     }
     
     @DeleteMapping("/{scooterId}")

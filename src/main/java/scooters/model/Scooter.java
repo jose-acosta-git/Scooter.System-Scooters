@@ -44,4 +44,7 @@ public class Scooter {
 	public void setStatus(String status) {
 		this.status = status;
 	}
+	public void setLastMaintenanceDate(LocalDate date) {
+		this.lastMaintenanceDate = date;
+	}
 }

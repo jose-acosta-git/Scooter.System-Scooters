@@ -1,5 +1,6 @@
 package scooters.services;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,20 +20,33 @@ public class ScootersService {
 	public Scooter save(ScooterDto dto) {
 		return scootersRepository.save(convertToEntity(dto));
 	}
-	
-    public ResponseEntity<Scooter> updateScooterStatus(int scooterId, String newStatus) {
-    	boolean isValud = isValidStatus(newStatus);
-    	if (!isValud) {
-    		return ResponseEntity.badRequest().build();
-    	}
+    
+	public ResponseEntity<Scooter> startMaintenance(int scooterId) {
         Optional<Scooter> scooterOptional = scootersRepository.findById(scooterId);
         if (scooterOptional.isPresent()) {
             Scooter scooter = scooterOptional.get();
-            scooter.setStatus(newStatus);
+            if (scooter.getStatus().equals("maintenance")) {
+        		return ResponseEntity.badRequest().build();
+            }
+            scooter.setStatus("maintenance");
             return ResponseEntity.ok(scootersRepository.save(scooter));
         }
         return ResponseEntity.notFound().build();
-    }
+	}
+	
+	public ResponseEntity<Scooter> finishMaintenance(int scooterId) {
+        Optional<Scooter> scooterOptional = scootersRepository.findById(scooterId);
+        if (scooterOptional.isPresent()) {
+            Scooter scooter = scooterOptional.get();
+            if (!scooter.getStatus().equals("maintenance")) {
+        		return ResponseEntity.badRequest().build();
+            }
+            scooter.setStatus("available");
+            scooter.setLastMaintenanceDate(LocalDate.now());
+            return ResponseEntity.ok(scootersRepository.save(scooter));
+        }
+        return ResponseEntity.notFound().build();
+	}
     
 	public ResponseEntity<String> removeScooter(int scooterId) {
         Optional<Scooter> scooterOptional = scootersRepository.findById(scooterId);
@@ -54,6 +68,10 @@ public class ScootersService {
 	private Scooter convertToEntity(ScooterDto dto) {
 		return new Scooter(dto.getLatitude(), dto.getLongitude(), dto.getLastMaintenanceDate());
 	}
+
+
+
+
 
 
 
