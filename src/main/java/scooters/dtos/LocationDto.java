@@ -1,17 +1,15 @@
 package scooters.dtos;
 
-public class StopDto {
+public class LocationDto {
 	
 	private double latitude;
 	private double longitude;
 	
-	public StopDto(double latitude, double longitude) {
+	public LocationDto(double latitude, double longitude) {
 		this.latitude = latitude;
 		this.longitude = longitude;
 	}
 	
-	public StopDto() {}
-
 	public double getLatitude() {return latitude;}
 	public double getLongitude() {return longitude;}
 }
