@@ -69,6 +69,14 @@ public class ScootersService {
 		return new Scooter(dto.getLatitude(), dto.getLongitude(), dto.getLastMaintenanceDate());
 	}
 
+	public ResponseEntity<Scooter> getById(int scooterId) {
+		Optional<Scooter> scooterOptional = scootersRepository.findById(scooterId);
+        if (scooterOptional.isPresent()) {
+            return ResponseEntity.ok(scooterOptional.get());
+        }
+        return ResponseEntity.notFound().build();
+	}
+
 
 
 

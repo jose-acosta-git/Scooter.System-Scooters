@@ -38,6 +38,11 @@ public class ScootersController {
 		return scootersRepository.findAll();
 	}
 	
+	@GetMapping("/{scooterId}")
+	public ResponseEntity<Scooter> getById(@PathVariable int scooterId) {
+		return scootersService.getById(scooterId);
+	}
+	
     @PatchMapping("/{scooterId}/startMaintenance")
     public ResponseEntity<Scooter> startMaintenance(@PathVariable int scooterId) {
         return scootersService.startMaintenance(scooterId);
@@ -51,6 +56,5 @@ public class ScootersController {
     @DeleteMapping("/{scooterId}")
     public ResponseEntity<String> removeScooter(@PathVariable int scooterId) {
         return scootersService.removeScooter(scooterId);
-    }
-
+    }  
 }
