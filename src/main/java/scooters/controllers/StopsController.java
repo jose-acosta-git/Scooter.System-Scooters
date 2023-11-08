@@ -35,9 +35,4 @@ public class StopsController {
 	public List<Stop> findlAll() {
 		return stopsRepository.findAll();
 	}
-	
-	@GetMapping("/checkLocationWithinStop")
-	public ResponseEntity<Stop> checkLocationWithinStop(@RequestBody LocationDto location) {
-		return stopsService.checkLocationWithinStop(location);
-	}
 }

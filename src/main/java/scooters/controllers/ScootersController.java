@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import scooters.dtos.LocationDto;
 import scooters.dtos.ScooterDto;
 import scooters.model.Scooter;
+import scooters.model.Stop;
 import scooters.repositories.ScootersRepository;
 import scooters.services.ScootersService;
 
@@ -57,4 +59,14 @@ public class ScootersController {
     public ResponseEntity<String> removeScooter(@PathVariable int scooterId) {
         return scootersService.removeScooter(scooterId);
     }  
+    
+    @GetMapping("/{scooterId}/currentStop")
+    public ResponseEntity<Stop> currentStop(@PathVariable int scooterId) {
+    	return scootersService.currentStop(scooterId);
+    }
+    
+    @PatchMapping("/{scooterId}/updateLocation")
+    public ResponseEntity<Scooter> updateLocation(@PathVariable int scooterId, @RequestBody LocationDto location) {
+    	return scootersService.updateLocation(scooterId, location);
+    }
 }
