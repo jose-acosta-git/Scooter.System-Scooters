@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.servlet.http.HttpServletRequest;
 import scooters.dtos.LocationDto;
 import scooters.dtos.ScooterDto;
 import scooters.model.Scooter;
@@ -61,8 +62,8 @@ public class ScootersController {
     }  
     
     @GetMapping("/{scooterId}/currentStop")
-    public ResponseEntity<Stop> currentStop(@PathVariable int scooterId) {
-    	return scootersService.currentStop(scooterId);
+    public ResponseEntity<Stop> currentStop(HttpServletRequest request, @PathVariable int scooterId) {
+    	return scootersService.currentStop(request, scooterId);
     }
     
     @PatchMapping("/{scooterId}/updateLocation")

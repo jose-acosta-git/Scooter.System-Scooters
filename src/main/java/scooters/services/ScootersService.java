@@ -5,9 +5,11 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import scooters.dtos.LocationDto;
 import scooters.dtos.ScooterDto;
 import scooters.model.Scooter;
@@ -22,6 +24,8 @@ public class ScootersService {
 	private ScootersRepository scootersRepository;
 	@Autowired
 	private StopsRepository stopsRepository;
+	@Autowired
+	private AuthService authService;
 	
 	public Scooter save(ScooterDto dto) {
 		return scootersRepository.save(convertToEntity(dto));
@@ -79,7 +83,15 @@ public class ScootersService {
         return ResponseEntity.notFound().build();
 	}
 
-	public ResponseEntity<Stop> currentStop(int scooterId) {
+	public ResponseEntity<Stop> currentStop(HttpServletRequest request, int scooterId) {
+		String token = authService.getTokenFromRequest(request);
+		if (token == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
+		if (!authService.isTokenValid(token)) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
+
 		Optional<Scooter> optionalScooter = scootersRepository.findById(scooterId);
 		if (!optionalScooter.isPresent()) {
 			return ResponseEntity.notFound().build();
