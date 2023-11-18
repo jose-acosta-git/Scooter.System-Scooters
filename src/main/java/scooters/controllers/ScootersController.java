@@ -32,33 +32,33 @@ public class ScootersController {
 	private ScootersService scootersService;
 	
 	@PostMapping
-	public Scooter create(@RequestBody ScooterDto dto) {
-		return scootersService.save(dto);
+	public ResponseEntity<Scooter> create(HttpServletRequest request, @RequestBody ScooterDto dto) {
+		return scootersService.save(request, dto);
 	}
 	
 	@GetMapping
-	public List<Scooter> findAll() {
-		return scootersRepository.findAll();
+	public ResponseEntity<List<Scooter>> findAll(HttpServletRequest request) {
+        return scootersService.findAll(request);
 	}
 	
 	@GetMapping("/{scooterId}")
-	public ResponseEntity<Scooter> getById(@PathVariable int scooterId) {
-		return scootersService.getById(scooterId);
+	public ResponseEntity<Scooter> getById(HttpServletRequest request, @PathVariable int scooterId) {
+		return scootersService.getById(request, scooterId);
 	}
 	
     @PatchMapping("/{scooterId}/startMaintenance")
-    public ResponseEntity<Scooter> startMaintenance(@PathVariable int scooterId) {
-        return scootersService.startMaintenance(scooterId);
+    public ResponseEntity<Scooter> startMaintenance(HttpServletRequest request, @PathVariable int scooterId) {
+        return scootersService.startMaintenance(request, scooterId);
     }
     
     @PatchMapping("/{scooterId}/finishMaintenance")
-    public ResponseEntity<Scooter> finishMaintenance(@PathVariable int scooterId) {
-        return scootersService.finishMaintenance(scooterId);
+    public ResponseEntity<Scooter> finishMaintenance(HttpServletRequest request, @PathVariable int scooterId) {
+        return scootersService.finishMaintenance(request, scooterId);
     }
     
     @DeleteMapping("/{scooterId}")
-    public ResponseEntity<String> removeScooter(@PathVariable int scooterId) {
-        return scootersService.removeScooter(scooterId);
+    public ResponseEntity<String> removeScooter(HttpServletRequest request, @PathVariable int scooterId) {
+        return scootersService.removeScooter(request, scooterId);
     }  
     
     @GetMapping("/{scooterId}/currentStop")
@@ -67,7 +67,7 @@ public class ScootersController {
     }
     
     @PatchMapping("/{scooterId}/updateLocation")
-    public ResponseEntity<Scooter> updateLocation(@PathVariable int scooterId, @RequestBody LocationDto location) {
-    	return scootersService.updateLocation(scooterId, location);
+    public ResponseEntity<Scooter> updateLocation(HttpServletRequest request, @PathVariable int scooterId, @RequestBody LocationDto location) {
+    	return scootersService.updateLocation(request, scooterId, location);
     }
 }

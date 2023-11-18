@@ -27,11 +27,30 @@ public class ScootersService {
 	@Autowired
 	private AuthService authService;
 	
-	public Scooter save(ScooterDto dto) {
-		return scootersRepository.save(convertToEntity(dto));
+	public ResponseEntity<Scooter> save(HttpServletRequest request, ScooterDto dto) {
+		String token = authService.getTokenFromRequest(request);
+		if (token == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
+		String role = authService.getRoleFromToken(token);
+		if (role != null && (role.equals("ADMIN") || role.equals("MAINTENANCE"))) {
+			return ResponseEntity.ok(scootersRepository.save(convertToEntity(dto)));
+		}
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 	}
     
-	public ResponseEntity<Scooter> startMaintenance(int scooterId) {
+	public ResponseEntity<Scooter> startMaintenance(HttpServletRequest request, int scooterId) {
+		String token = authService.getTokenFromRequest(request);
+		if (token == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
+		String role = authService.getRoleFromToken(token);
+		if (role == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		} else if (role.equals("USER")) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+		}
+
         Optional<Scooter> scooterOptional = scootersRepository.findById(scooterId);
         if (scooterOptional.isPresent()) {
             Scooter scooter = scooterOptional.get();
@@ -44,7 +63,18 @@ public class ScootersService {
         return ResponseEntity.notFound().build();
 	}
 	
-	public ResponseEntity<Scooter> finishMaintenance(int scooterId) {
+	public ResponseEntity<Scooter> finishMaintenance(HttpServletRequest request, int scooterId) {
+		String token = authService.getTokenFromRequest(request);
+		if (token == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
+		String role = authService.getRoleFromToken(token);
+		if (role == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		} else if (role.equals("USER")) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+		}
+
         Optional<Scooter> scooterOptional = scootersRepository.findById(scooterId);
         if (scooterOptional.isPresent()) {
             Scooter scooter = scooterOptional.get();
@@ -58,7 +88,18 @@ public class ScootersService {
         return ResponseEntity.notFound().build();
 	}
     
-	public ResponseEntity<String> removeScooter(int scooterId) {
+	public ResponseEntity<String> removeScooter(HttpServletRequest request, int scooterId) {
+		String token = authService.getTokenFromRequest(request);
+		if (token == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
+		String role = authService.getRoleFromToken(token);
+		if (role == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		} else if (role.equals("USER")) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+		}
+		
         Optional<Scooter> scooterOptional = scootersRepository.findById(scooterId);
         if (scooterOptional.isPresent()) {
             Scooter scooter = scooterOptional.get();
@@ -75,7 +116,15 @@ public class ScootersService {
 		return new Scooter(dto.getLatitude(), dto.getLongitude(), dto.getLastMaintenanceDate());
 	}
 
-	public ResponseEntity<Scooter> getById(int scooterId) {
+	public ResponseEntity<Scooter> getById(HttpServletRequest request, int scooterId) {
+		String token = authService.getTokenFromRequest(request);
+		if (token == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
+		if (!authService.isTokenValid(token)) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
+
 		Optional<Scooter> scooterOptional = scootersRepository.findById(scooterId);
         if (scooterOptional.isPresent()) {
             return ResponseEntity.ok(scooterOptional.get());
@@ -115,7 +164,15 @@ public class ScootersService {
 		return latDiff <= tolerance && lonDiff <= tolerance;
 	}
 
-	public ResponseEntity<Scooter> updateLocation(int scooterId, LocationDto location) {
+	public ResponseEntity<Scooter> updateLocation(HttpServletRequest request, int scooterId, LocationDto location) {
+		String token = authService.getTokenFromRequest(request);
+		if (token == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
+		if (!authService.isTokenValid(token)) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
+	
 		Optional<Scooter> optionalScooter = scootersRepository.findById(scooterId);
 		if (!optionalScooter.isPresent()) {
 			return ResponseEntity.notFound().build();
@@ -126,10 +183,15 @@ public class ScootersService {
 		return ResponseEntity.ok(scootersRepository.save(scooter));
 	}
 
-
-
-
-
-
-
+	public ResponseEntity<List<Scooter>> findAll(HttpServletRequest request) {
+		String token = authService.getTokenFromRequest(request);
+		if (token == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
+		String role = authService.getRoleFromToken(token);
+		if (role != null && (role.equals("ADMIN") || role.equals("MAINTENANCE"))) {
+			return ResponseEntity.ok(scootersRepository.findAll());
+		}
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+	}
 }
