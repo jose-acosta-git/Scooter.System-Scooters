@@ -20,16 +20,11 @@ import scooters.dtos.ScooterWithDistanceDto;
 import scooters.dtos.ScooterWithTimeDto;
 import scooters.model.Scooter;
 import scooters.model.Stop;
-import scooters.repositories.ScootersRepository;
 import scooters.services.ScootersService;
 
 @RestController
 @RequestMapping("/scooters")
 public class ScootersController {
-	
-	@Autowired
-	private ScootersRepository scootersRepository;
-	
 	@Autowired
 	private ScootersService scootersService;
 	

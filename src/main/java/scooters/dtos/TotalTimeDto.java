@@ -21,6 +21,4 @@ public class TotalTimeDto {
     public void setTotalTimeSeconds(Long totalTimeSeconds) {
         this.totalTimeSeconds = totalTimeSeconds;
     }
-
-    
 }

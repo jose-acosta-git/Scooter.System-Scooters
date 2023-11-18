@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpServletRequest;
-import scooters.dtos.LocationDto;
 import scooters.dtos.StopDto;
 import scooters.model.Stop;
 import scooters.repositories.StopsRepository;

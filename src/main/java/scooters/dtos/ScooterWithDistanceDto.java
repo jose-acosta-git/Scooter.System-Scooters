@@ -70,7 +70,4 @@ public class ScooterWithDistanceDto {
     public void setTotalDistance(double totalDistance) {
         this.totalDistance = totalDistance;
     }
-
-    
-    
 }

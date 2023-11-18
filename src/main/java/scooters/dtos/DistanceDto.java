@@ -21,7 +21,4 @@ public class DistanceDto {
     public void setTotalDistance(double totalDistance) {
         this.totalDistance = totalDistance;
     }
-    
-    
-    
 }
