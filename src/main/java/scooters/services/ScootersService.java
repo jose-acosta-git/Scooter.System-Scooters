@@ -1,6 +1,11 @@
 package scooters.services;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,9 +14,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jakarta.servlet.http.HttpServletRequest;
+import scooters.dtos.DistanceDto;
 import scooters.dtos.LocationDto;
 import scooters.dtos.ScooterDto;
+import scooters.dtos.ScooterWithDistanceDto;
 import scooters.model.Scooter;
 import scooters.model.Stop;
 import scooters.repositories.ScootersRepository;
@@ -26,6 +36,7 @@ public class ScootersService {
 	private StopsRepository stopsRepository;
 	@Autowired
 	private AuthService authService;
+	private HttpClient client = HttpClient.newHttpClient();
 	
 	public ResponseEntity<Scooter> save(HttpServletRequest request, ScooterDto dto) {
 		String token = authService.getTokenFromRequest(request);
@@ -194,4 +205,45 @@ public class ScootersService {
 		}
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 	}
+
+    public ResponseEntity<List<ScooterWithDistanceDto>> getOrderedByTotalDistance(HttpServletRequest request) {
+		String token = authService.getTokenFromRequest(request);
+		if (token == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
+		String role = authService.getRoleFromToken(token);
+		if (role == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		} else if (role.equals("USER")) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+		}
+
+		String url = "http://localhost:8080/rides/scootersOrderedByDistance";
+        HttpRequest scootersRequest = HttpRequest.newBuilder()
+            .uri(URI.create(url))
+            .header("Authorization", "Bearer " + token)
+            .build();
+
+		try {
+			HttpResponse<String> response = client.send(scootersRequest, HttpResponse.BodyHandlers.ofString());
+			if (response.statusCode() == 200) {
+                String responseBody = response.body();
+                ObjectMapper objectMapper = new ObjectMapper();
+ 				List<DistanceDto> distanceDtoList = objectMapper.readValue(responseBody, new TypeReference<List<DistanceDto>>() {});
+				List<ScooterWithDistanceDto> scootersWithDistance = new ArrayList<>();
+				for (DistanceDto dto : distanceDtoList) {
+					Optional<Scooter> optionalScooter = scootersRepository.findById(dto.getId());
+					if (optionalScooter.isPresent()) {
+						Scooter scooter = optionalScooter.get();
+						scootersWithDistance.add(new ScooterWithDistanceDto(scooter.getId(), scooter.getStatus(), scooter.getLatitude(),
+							scooter.getLongitude(), scooter.getLastMaintenanceDate(), dto.getTotalDistance()));
+					}
+				}
+				return ResponseEntity.ok(scootersWithDistance);
+			}
+			return ResponseEntity.badRequest().build();
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().build();
+		}
+    }
 }

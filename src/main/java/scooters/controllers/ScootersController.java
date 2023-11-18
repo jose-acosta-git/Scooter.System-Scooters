@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.servlet.http.HttpServletRequest;
 import scooters.dtos.LocationDto;
 import scooters.dtos.ScooterDto;
+import scooters.dtos.ScooterWithDistanceDto;
 import scooters.model.Scooter;
 import scooters.model.Stop;
 import scooters.repositories.ScootersRepository;
@@ -69,5 +70,10 @@ public class ScootersController {
     @PatchMapping("/{scooterId}/updateLocation")
     public ResponseEntity<Scooter> updateLocation(HttpServletRequest request, @PathVariable int scooterId, @RequestBody LocationDto location) {
     	return scootersService.updateLocation(request, scooterId, location);
+    }
+
+    @GetMapping("/orderedByDistance")
+    public ResponseEntity<List<ScooterWithDistanceDto>> getOrderedByDistance(HttpServletRequest request) {
+		return scootersService.getOrderedByTotalDistance(request);
     }
 }
