@@ -17,6 +17,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import scooters.dtos.LocationDto;
 import scooters.dtos.ScooterDto;
 import scooters.dtos.ScooterWithDistanceDto;
+import scooters.dtos.ScooterWithTimeDto;
 import scooters.model.Scooter;
 import scooters.model.Stop;
 import scooters.repositories.ScootersRepository;
@@ -75,5 +76,10 @@ public class ScootersController {
     @GetMapping("/orderedByDistance")
     public ResponseEntity<List<ScooterWithDistanceDto>> getOrderedByDistance(HttpServletRequest request) {
 		return scootersService.getOrderedByTotalDistance(request);
+    }
+
+    @GetMapping("/orderedByTotalTime/{includePauses}")
+    public ResponseEntity<List<ScooterWithTimeDto>> getOrderedByTotalTime(HttpServletRequest request, @PathVariable boolean includePauses) {
+    	return scootersService.getOrderedByTotalTime(request, includePauses);
     }
 }

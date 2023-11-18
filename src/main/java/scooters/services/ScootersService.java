@@ -22,6 +22,8 @@ import scooters.dtos.DistanceDto;
 import scooters.dtos.LocationDto;
 import scooters.dtos.ScooterDto;
 import scooters.dtos.ScooterWithDistanceDto;
+import scooters.dtos.ScooterWithTimeDto;
+import scooters.dtos.TotalTimeDto;
 import scooters.model.Scooter;
 import scooters.model.Stop;
 import scooters.repositories.ScootersRepository;
@@ -231,6 +233,8 @@ public class ScootersService {
                 ObjectMapper objectMapper = new ObjectMapper();
  				List<DistanceDto> distanceDtoList = objectMapper.readValue(responseBody, new TypeReference<List<DistanceDto>>() {});
 				List<ScooterWithDistanceDto> scootersWithDistance = new ArrayList<>();
+
+				//Maps the List obtained from Rides service to another List with Scooter data
 				for (DistanceDto dto : distanceDtoList) {
 					Optional<Scooter> optionalScooter = scootersRepository.findById(dto.getId());
 					if (optionalScooter.isPresent()) {
@@ -239,7 +243,63 @@ public class ScootersService {
 							scooter.getLongitude(), scooter.getLastMaintenanceDate(), dto.getTotalDistance()));
 					}
 				}
+				//Add Scooters that have not rides to return list
+				for (Scooter scooter : scootersRepository.findAll()) {
+					if (!distanceDtoList.stream().anyMatch(s -> s.getId() == scooter.getId())) {
+						scootersWithDistance.add(new ScooterWithDistanceDto(scooter.getId(), scooter.getStatus(), scooter.getLatitude(),
+						scooter.getLongitude(), scooter.getLastMaintenanceDate(), 0));
+					}
+				}
 				return ResponseEntity.ok(scootersWithDistance);
+			}
+			return ResponseEntity.badRequest().build();
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().build();
+		}
+    }
+
+    public ResponseEntity<List<ScooterWithTimeDto>> getOrderedByTotalTime(HttpServletRequest request, boolean includePauses) {
+		String token = authService.getTokenFromRequest(request);
+		if (token == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
+		String role = authService.getRoleFromToken(token);
+		if (role == null) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		} else if (role.equals("USER")) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+		}
+
+		String url = "http://localhost:8080/rides/scootersOrderedByTotalTime/" + includePauses;
+        HttpRequest scootersRequest = HttpRequest.newBuilder()
+            .uri(URI.create(url))
+            .header("Authorization", "Bearer " + token)
+            .build();
+
+		try {
+			HttpResponse<String> response = client.send(scootersRequest, HttpResponse.BodyHandlers.ofString());
+			if (response.statusCode() == 200) {
+                String responseBody = response.body();
+                ObjectMapper objectMapper = new ObjectMapper();
+ 				List<TotalTimeDto> timeDtoList = objectMapper.readValue(responseBody, new TypeReference<List<TotalTimeDto>>() {});
+				List<ScooterWithTimeDto> scootersWithTime = new ArrayList<>();
+				//Maps the List obtained from Rides service to another List with Scooter data
+				for (TotalTimeDto dto : timeDtoList) {
+					Optional<Scooter> optionalScooter = scootersRepository.findById(dto.getScooterId());
+					if (optionalScooter.isPresent()) {
+						Scooter scooter = optionalScooter.get();
+						scootersWithTime.add(new ScooterWithTimeDto(scooter.getId(), scooter.getStatus(), scooter.getLatitude(),
+							scooter.getLongitude(), scooter.getLastMaintenanceDate(), dto.getTotalTimeSeconds()));
+					}
+				}
+				//Add Scooters that have not rides to return list
+				for (Scooter scooter : scootersRepository.findAll()) {
+					if (!timeDtoList.stream().anyMatch(s -> s.getScooterId() == scooter.getId())) {
+						scootersWithTime.add(new ScooterWithTimeDto(scooter.getId(), scooter.getStatus(), scooter.getLatitude(),
+						scooter.getLongitude(), scooter.getLastMaintenanceDate(), 0L));
+					}
+				}
+				return ResponseEntity.ok(scootersWithTime);
 			}
 			return ResponseEntity.badRequest().build();
 		} catch (Exception e) {
