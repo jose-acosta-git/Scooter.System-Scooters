@@ -10,10 +10,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import scooters.dtos.LocationDto;
+import jakarta.servlet.http.HttpServletRequest;
 import scooters.dtos.StopDto;
 import scooters.model.Stop;
-import scooters.repositories.StopsRepository;
 import scooters.services.StopsService;
 
 @RestController
@@ -23,16 +22,13 @@ public class StopsController {
 	@Autowired
 	private StopsService stopsService;
 	
-	@Autowired
-	private StopsRepository stopsRepository;
-	
 	@PostMapping
-	public Stop create(@RequestBody StopDto dto) {
-		return stopsService.save(dto);
+	public ResponseEntity<Stop> create(HttpServletRequest request, @RequestBody StopDto dto) {
+		return stopsService.save(request, dto);
 	}
 	
 	@GetMapping
-	public List<Stop> findlAll() {
-		return stopsRepository.findAll();
+	public ResponseEntity<List<Stop>> findlAll(HttpServletRequest request) {
+		return stopsService.findAll(request);
 	}
 }

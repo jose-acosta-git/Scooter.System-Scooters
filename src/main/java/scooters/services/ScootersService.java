@@ -33,7 +33,7 @@ public class ScootersService {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 		}
 		String role = authService.getRoleFromToken(token);
-		if (role != null && (role.equals("ADMIN") || role.equals("MAINTENANCE"))) {
+		if (role != null && role.equals("ADMIN")) {
 			return ResponseEntity.ok(scootersRepository.save(convertToEntity(dto)));
 		}
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -96,7 +96,7 @@ public class ScootersService {
 		String role = authService.getRoleFromToken(token);
 		if (role == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-		} else if (role.equals("USER")) {
+		} else if (!role.equals("ADMIN")) {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 		}
 		
